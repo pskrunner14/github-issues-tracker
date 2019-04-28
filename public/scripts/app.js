@@ -26,7 +26,7 @@ app.controller('IssueController', ['$scope', '$http', function ($scope, $http) {
     // updates the table of information about issues
     function updateTable(username, repository) {
         $scope.loading_data = true;
-        $scope.loaded_data = false;
+        $scope.data_loaded = false;
         console.log('loading fresh data...');
         
         $http.get(`/${username}/${repository}`)

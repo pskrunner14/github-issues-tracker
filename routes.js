@@ -13,10 +13,12 @@ router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+function now() {
+    return moment().tz('Asia/Calcutta').utc();
+}
+
 // API route
 router.get('/:username/:repository', function(req, res) {
-    // Cache the current timestamp
-    const now = moment().tz('Asia/Calcutta').utc();
     // Fix the URL for repository issues page
     const URL = `https://github.com/${req.params.username}/${req.params.repository}/issues`;
     // Current page number
@@ -30,7 +32,7 @@ router.get('/:username/:repository', function(req, res) {
         }
     }).then(async function($) {
         // Get the total number of open issues from 1st page
-        const num = parseInt($('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text());
+        const num = parseInt($('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text().replace(',', ''));
 
         // Store the issue timestamps in array
         let issues = [];
@@ -51,7 +53,7 @@ router.get('/:username/:repository', function(req, res) {
         // no. of recent issues from the total to get no. of issues older than a week.
         let old_data = false;
         let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
-        if (dt < now.subtract(1, 'weeks')) {
+        if (dt < now().subtract(1, 'weeks')) {
             old_data = true;
         }
 
@@ -74,7 +76,7 @@ router.get('/:username/:repository', function(req, res) {
 
                 // Check for old data
                 let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
-                if (dt < now.subtract(1, 'weeks')) {
+                if (dt < now().subtract(1, 'weeks')) {
                     old_data = true;
                 }
             }).catch(function(err) {
@@ -91,9 +93,9 @@ router.get('/:username/:repository', function(req, res) {
         let last_24 = 0, last_week = 0;
         issues.forEach(elem => {
             let dt = moment(elem.toString()).tz('Asia/Calcutta').utc();
-            if (dt >= now.subtract(1, 'days')) {
+            if (dt >= now().subtract(1, 'days')) {
                 last_24++;
-            } else if (dt >= now.subtract(1, 'weeks')) {
+            } else if (dt >= now().subtract(1, 'weeks')) {
                 last_week++;
             }
         });

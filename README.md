@@ -1,6 +1,6 @@
 # GitHub Issues Tracker
 
-[![Demo on Heroku](./images/demo.svg)](https://github-issues-tracker.herokuapp.com/) [![Hackage-Deps](https://img.shields.io/hackage-deps/v/lens.svg)](https://github.com/pskrunner14/github-issues-tracker/network/dependencies)
+[![Demo on Heroku](./extra/demo.svg)](https://github-issues-tracker.herokuapp.com/) [![Hackage-Deps](https://img.shields.io/hackage-deps/v/lens.svg)](https://github.com/pskrunner14/github-issues-tracker/network/dependencies)
 
 This application tracks the number of issues for any GitHub Public Repository for various different timeframes. It is built with [Node.js](https://nodejs.org/), [Express](https://expressjs.com/) and [Cheerio](https://cheerio.js.org/).
 

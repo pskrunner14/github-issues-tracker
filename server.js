@@ -2,7 +2,9 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
+// Define a port
 const PORT = process.env.PORT || 3000;
+// Create the app
 const app = express();
 
 // Middleware config
@@ -11,6 +13,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+
+// Static file directory
+app.use(express.static(__dirname + '/public'));
 
 // Set up the routes
 app.use(require('./routes'));

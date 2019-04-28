@@ -8,6 +8,11 @@ const request = require('request-promise');
 // Set up Express Router
 const router = require('express').Router();
 
+// Application route
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // API route
 router.get('/:username/:repository', function(req, res) {
     // Cache the current timestamp
@@ -58,7 +63,7 @@ router.get('/:username/:repository', function(req, res) {
                 // Check if pagination panel has the `next` button and is enabled
                 has_next = !$('div.paginate-container>div.pagination>.next_page').hasClass('disabled');
             }).catch(function(err) {
-                // Crawling failed or Cheerio choked...
+                // Scraping failed or Cheerio choked
                 console.error('error occured while loading the page!');
                 return res.json({
                     error: true,
@@ -89,15 +94,15 @@ router.get('/:username/:repository', function(req, res) {
         // Return the info in JSON object
         return res.json({
             'error': false,
-            'number': num,
             'issues': {
-                'Opened in the last 24 hours': last_24,
-                'Opened more than 24 hours ago but less than 7 days ago': last_week,
-                'Opened more than 7 days ago': before_last_week
+                'total': parseInt(num),
+                'last_24': last_24,
+                'last_week': last_week,
+                'before_last_week': before_last_week
             }
         });
     }).catch(function (err) {
-        // Crawling failed or Cheerio choked...
+        // Scraping failed or Cheerio choked
         console.error('error occured while loading the page!');
         return res.json({
             error: true,

@@ -1,5 +1,5 @@
 {
-  "name": "r",
+  "name": "github-issues-tracker",
   "version": "1.0.0",
   "description": "GitHub Issues Tracker",
   "main": "server.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pskrunner14/radius-task.git"
+    "url": "git+https://github.com/pskrunner14/github-issues-tracker.git"
   },
   "author": "Prabhsimran Singh <pskrunner14@gmail.com>",
   "license": "UNLICENCED",
   "bugs": {
-    "url": "https://github.com/pskrunner14/radius-task/issues"
+    "url": "https://github.com/pskrunner14/github-issues-tracker/issues"
   },
-  "homepage": "https://github.com/pskrunner14/radius-task#readme",
+  "homepage": "https://github.com/pskrunner14/github-issues-tracker#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",

@@ -26,21 +26,14 @@ Now, the application will be available on [http://localhost:3000](http://localho
 ## Explanation
 
 - User provides the link on the app. AJAX call is made to the API.
-
 - Obtain the username and repository through the API as parameters.
-
 - Make a request for the issues page of the repository and get the total no. of open issues.
-
 - Filter all the issues' timestamps based on CSS selectors and store them in array.
-
 - Check if the pagination panel exists and the next button is enabled.
-
 - If so, keep making requests for subsequent pages until we have all the issues data.
-
-- Compute the number of issues in different categories based on their recency.
-
+- Also check if the last issue on the page is older than a week, we can stop making requests in that case.
+- Compute the number of issues in different categories based on their recency, for requests older than a week we just have to subract the other two from the total.
 - Return the data in JSON object.
-
 - Render the information as a table on app.
 
 ## Improvements

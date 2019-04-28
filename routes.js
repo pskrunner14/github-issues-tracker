@@ -30,7 +30,7 @@ router.get('/:username/:repository', function(req, res) {
         }
     }).then(async function($) {
         // Get the total number of open issues from 1st page
-        const num = $('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text();
+        const num = parseInt($('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text());
 
         // Store the issue timestamps in array
         let issues = [];
@@ -46,7 +46,16 @@ router.get('/:username/:repository', function(req, res) {
         // Check if pagination panel has the `next` button and is enabled 
         let has_next = !$('div.paginate-container>div.pagination>.next_page').hasClass('disabled');
 
-        while (paginate && has_next) {
+        // Check if last issue on the page is older than a week
+        // If so, stop making more requests as we only need to subract the 
+        // no. of recent issues from the total to get no. of issues older than a week.
+        let old_data = false;
+        let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
+        if (dt < now.subtract(1, 'weeks')) {
+            old_data = true;
+        }
+
+        while (paginate && has_next && !old_data) {
             // Increment page number
             page++;
             // Make request for subsequent pages until possible
@@ -62,31 +71,33 @@ router.get('/:username/:repository', function(req, res) {
                 });
                 // Check if pagination panel has the `next` button and is enabled
                 has_next = !$('div.paginate-container>div.pagination>.next_page').hasClass('disabled');
+
+                // Check for old data
+                let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
+                if (dt < now.subtract(1, 'weeks')) {
+                    old_data = true;
+                }
             }).catch(function(err) {
                 // Scraping failed or Cheerio choked
-                console.error('error occured while loading the page!');
+                console.error(err.toString());
                 return res.json({
                     error: true,
-                    info: err
+                    info: err.toString()
                 });
             });
         }
 
-        // Assert that the number of open issues matches the number of timestamps in array
-        console.assert(num == issues.length, "error in scraping issues!");
-
         // Compute the number of issues for each category based on their timestamp
-        let last_24 = 0, last_week = 0, before_last_week = 0;
+        let last_24 = 0, last_week = 0;
         issues.forEach(elem => {
             let dt = moment(elem.toString()).tz('Asia/Calcutta').utc();
             if (dt >= now.subtract(1, 'days')) {
                 last_24++;
             } else if (dt >= now.subtract(1, 'weeks')) {
                 last_week++;
-            } else {
-                before_last_week++;
             }
         });
+        const before_last_week = num - (last_24 + last_week);
 
         // Assert that the sum of issues in all categories equals the total number of issues
         console.assert((last_24 + last_week + before_last_week) == num, "error in computing issues for diff categories!");
@@ -95,7 +106,7 @@ router.get('/:username/:repository', function(req, res) {
         return res.json({
             'error': false,
             'issues': {
-                'total': parseInt(num),
+                'total': num,
                 'last_24': last_24,
                 'last_week': last_week,
                 'before_last_week': before_last_week
@@ -103,10 +114,10 @@ router.get('/:username/:repository', function(req, res) {
         });
     }).catch(function (err) {
         // Scraping failed or Cheerio choked
-        console.error('error occured while loading the page!');
+        console.error(err.toString());
         return res.json({
             error: true,
-            info: err
+            info: err.toString()
         });
     });
 });

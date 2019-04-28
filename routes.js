@@ -25,7 +25,7 @@ router.get('/:username/:repository', function(req, res) {
         }
     }).then(async function($) {
         // Get the total number of open issues from 1st page
-        let num = $('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text();
+        const num = $('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text();
 
         // Store the issue timestamps in array
         let issues = [];
@@ -83,6 +83,9 @@ router.get('/:username/:repository', function(req, res) {
             }
         });
 
+        // Assert that the number 
+        console.assert((last_24 + last_week + before_last_week) == num, "error in computing issues for diff categories!");
+
         // Return the info in JSON object
         return res.json({
             'error': false,
@@ -97,7 +100,8 @@ router.get('/:username/:repository', function(req, res) {
         // Crawling failed or Cheerio choked...
         console.error('error occured while loading the page!');
         return res.json({
-            error: true
+            error: true,
+            info: err
         });
     });
 });

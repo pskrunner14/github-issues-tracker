@@ -88,7 +88,7 @@ router.get('/:username/:repository', function(req, res) {
             }
         });
 
-        // Assert that the number 
+        // Assert that the sum of issues in all categories equals the total number of issues
         console.assert((last_24 + last_week + before_last_week) == num, "error in computing issues for diff categories!");
 
         // Return the info in JSON object

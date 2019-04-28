@@ -1,5 +1,8 @@
+// Express server module
 const express = require('express');
+// Helper for request logging
 const morgan = require('morgan');
+// Module for request body config
 const bodyParser = require('body-parser');
 
 // Define a port

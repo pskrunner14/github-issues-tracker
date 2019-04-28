@@ -1,78 +1,105 @@
-const async = require('async');
-
-const request = require('request');
+// Helper for traversing DOM like jQuery
 const cheerio = require('cheerio');
+// Helper for timestamp comparisons
+const moment = require('moment-timezone');
+// Helper for HTTP Requests with Promises
+const request = require('request-promise');
 
 // Set up Express Router
 const router = require('express').Router();
 
-// main route
-router.get('/:username/:repository', (req, res) => {
-
-    var page = 1;
-    var url = `https://github.com/${req.params.username}/${req.params.repository}/issues`;
-
-	request(`${url}?page=${page}&q=is%3Aissue+is%3Aopen`, function(err, resp, html) {
-		if (err) {
-            console.log('error occured while loading the page!');
-            return res.json({
-                error: true
-            });
+// API route
+router.get('/:username/:repository', function(req, res) {
+    // Cache the current timestamp
+    const now = moment().tz('Asia/Calcutta').utc();
+    // Fix the URL for repository issues page
+    const URL = `https://github.com/${req.params.username}/${req.params.repository}/issues`;
+    // Current page number
+    let page = 1;
+    
+    // Make request for the issues page
+    request({
+        uri: `${URL}?page=${page}&q=is%3Aissue+is%3Aopen`,
+        transform: function (html) {
+            return cheerio.load(html);
         }
-        var $ = cheerio.load(html);
-        var num = $('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text();
+    }).then(async function($) {
+        // Get the total number of open issues from 1st page
+        let num = $('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text();
 
-        var issues = [];
+        // Store the issue timestamps in array
+        let issues = [];
+        $('div.js-navigation-container.js-active-navigation-container>div>div>div.col-9>div.mt-1>span.opened-by>relative-time').filter(function(e) {
+            // Filter the datetime attribute from
+            // relative-time tag inside each issue
+            let dt = $(this).attr('datetime');
+            issues.push(dt);
+        });
 
-        $('div.js-navigation-container.js-active-navigation-container>div').each(function(elem) {
-            var elem = $(this);
-            var issue_id = elem.attr('id').toString().substring(6);
-            
-            request(`${url}/${issue_id}`, function(err, resp, html) {
-                if (err) {
-                    console.log('error occured while loading the page!');
-                    return res.json({
-                        error: true
-                    });
+        // Check if pagination panel is present (i.e. there are multiple pages)
+        const paginate = $('div.paginate-container').find('div.pagination').length > 0;
+        // Check if pagination panel has the `next` button and is enabled 
+        let has_next = !$('div.paginate-container>div.pagination>.next_page').hasClass('disabled');
+
+        while (paginate && has_next) {
+            // Increment page number
+            page++;
+            // Make request for subsequent pages until possible
+            await request({
+                uri: `${URL}?page=${page}&q=is%3Aissue+is%3Aopen`,
+                transform: function(html) {
+                    return cheerio.load(html);
                 }
-                var issue_page = cheerio.load(html);
-                const title = issue_page('h1.gh-header-title>span.js-issue-title').text().trim();
-                const dt = issue_page('relative-time').first().attr('datetime');
-                console.log(title.trim());
-                console.log(dt);
-                issues.push({
-                    'title': title,
-                    'datetime': dt
+            }).then(function($) {
+                $('div.js-navigation-container.js-active-navigation-container>div>div>div.col-9>div.mt-1>span.opened-by>relative-time').filter(function(e) {
+                    let dt = $(this).attr('datetime');
+                    issues.push(dt);
+                });
+                // Check if pagination panel has the `next` button and is enabled
+                has_next = !$('div.paginate-container>div.pagination>.next_page').hasClass('disabled');
+            }).catch(function(err) {
+                // Crawling failed or Cheerio choked...
+                console.error('error occured while loading the page!');
+                return res.json({
+                    error: true,
+                    info: err
                 });
             });
-        });
-        var paginate = $('.paginate-container').children();
+        }
 
-        // while (paginate.length > 0 && page < 3) {
-        //     page++;
-        //     request(`${url}?page=${page}&q=is%3Aissue+is%3Aopen`, function(err, resp, html) {
-        //         if (err) {
-        //             console.log('error occured while loading the page!');
-        //             return res.json({
-        //                 error: true
-        //             });
-        //         }
-        //         $ = cheerio.load(html);
-        //         $('div.Box-row.Box-row--focus-gray.p-0.mt-0.js-navigation-item.js-issue-row.selectable.read.navigation-focus').each(elem => {
-        //             var elem = $(elem);
-        //             const title = elem.children().first().children('div.float-left.col-9.lh-condensed.p-2>a').text();
-        //             issues.push(title);
-        //         });
-        //         paginate = $('.paginate-container').children('span.next_page').hasClass('disabled') || $('.paginate-container').children();
-        //         console.log(paginate);
-        //     });
-        // }
-        res.json({
+        // Assert that the number of open issues matches the number of timestamps in array
+        console.assert(num == issues.length, "error in scraping issues!");
+
+        // Compute the number of issues for each category based on their timestamp
+        let last_24 = 0, last_week = 0, before_last_week = 0;
+        issues.forEach(elem => {
+            let dt = moment(elem.toString()).tz('Asia/Calcutta').utc();
+            if (dt >= now.subtract(1, 'days')) {
+                last_24++;
+            } else if (dt >= now.subtract(1, 'weeks')) {
+                last_week++;
+            } else {
+                before_last_week++;
+            }
+        });
+
+        // Return the info in JSON object
+        return res.json({
             'error': false,
             'number': num,
-            'issues': issues
+            'issues': {
+                'Opened in the last 24 hours': last_24,
+                'Opened more than 24 hours ago but less than 7 days ago': last_week,
+                'Opened more than 7 days ago': before_last_week
+            }
         });
-	});
+    }).catch(function (err) {
+        // Crawling failed or Cheerio choked...
+        console.error('error occured while loading the page!');
+        return res.json({
+            error: true
+        });
+    });
 });
 
 module.exports = router;

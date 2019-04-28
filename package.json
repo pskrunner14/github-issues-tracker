@@ -1,0 +1,26 @@
+{
+  "name": "radius-task",
+  "version": "1.0.0",
+  "description": "GitHub Issues Tracker for Radius Backend Task",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pskrunner14/radius-task.git"
+  },
+  "author": "Prabhsimran Singh <pskrunner14@gmail.com>",
+  "license": "UNLICENCED",
+  "bugs": {
+    "url": "https://github.com/pskrunner14/radius-task/issues"
+  },
+  "homepage": "https://github.com/pskrunner14/radius-task#readme",
+  "dependencies": {
+    "async": "^2.6.2",
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.11"
+  }
+}

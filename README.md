@@ -40,6 +40,8 @@ Now, the application will be available on [http://localhost:3000](http://localho
 
 Given more time, significant improvements could be made to the:
 
-- API i.e. validation, error handling, scraping more rich data like titles and comments on issues, sentiment analysis on the content.
+- Backend API i.e. validation, error handling, scraping more rich data like titles and comments on issues, sentiment analysis on the content.
 
 - UI/UX of the application frontend, making it easier for users to obtain useful information from the site in less time.
+
+Project could also be improved by updating it to use the [GitHub Issues REST API](https://developer.github.com/v3/issues/) directly.

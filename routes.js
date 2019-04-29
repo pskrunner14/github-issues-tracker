@@ -32,7 +32,8 @@ router.get('/:username/:repository', function(req, res) {
         }
     }).then(async function($) {
         // Get the total number of open issues from 1st page
-        const num = parseInt($('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text().replace(',', ''));
+        // const num = parseInt($('a.js-selected-navigation-item.selected.reponav-item>span.Counter').text().replace(',', ''));
+        const num = parseInt($('a.btn-link.selected').contents()[2].data.trim().replace(',', '').replace('Open', '').trim());
 
         // Store the issue timestamps in array
         let issues = [];

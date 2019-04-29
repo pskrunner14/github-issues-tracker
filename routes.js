@@ -52,9 +52,11 @@ router.get('/:username/:repository', function(req, res) {
         // If so, stop making more requests as we only need to subract the 
         // no. of recent issues from the total to get no. of issues older than a week.
         let old_data = false;
-        let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
-        if (dt < now().subtract(1, 'weeks')) {
-            old_data = true;
+        if (issues.length > 0) {
+            let dt = moment(issues[issues.length - 1].toString()).tz('Asia/Calcutta').utc();
+            if (dt < now().subtract(1, 'weeks')) {
+                old_data = true;
+            }
         }
 
         while (paginate && has_next && !old_data) {

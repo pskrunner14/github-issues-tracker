@@ -1,82 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GitHub Issue Tracker</title>
-    <link rel="stylesheet" href="./styles/main.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
-</head>
-<body>
-    <div id="body-container" class="container" ng-app="github-issues-tracking" ng-controller="IssueController">
-        <div class="row">
-            <div id="main-content" class="col-md-12">
-                <div id="main-content-container" class="jumbotron jumbotron-fluid">
-                    <h1 id="main-content-head" class="display-4">GitHub Issues Tracker</h1>
-                    <p id="main-desc-1" class="lead">This application tracks the number of issues for any GitHub Public Repository for various different timeframes.</p>
-                </div>
-            </div>
-        </div>
-        <br>
-        <br>
-        <div class="row col-md-12">
-            <form>
-                <div class="form-group col-md-12">
-                  <label for="link">Public Repository Link</label>
-                  <input type="url" class="form-control" ng-model="link" id="link" aria-describedby="linkHelp" placeholder="https://github.com/username/repository">
-                  <small id="linkHelp" class="form-text text-muted">Please enter the link to a GitHub Public Repository</small>
-                </div>
-                <button ng-click="updateLink(link)" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-        <br>
-        <div class="alert alert-primary" ng-if="loading_data" role="alert">
-            <p class="lead">Loading Data!</p>
-        </div>
-        <br>
-        <div class="alert alert-success" ng-if="data_loaded" role="alert">
-            <p class="lead">Data Loaded!</p>
-        </div>
-        <br>
-        <div class="alert alert-danger" ng-if="load_error" role="alert">
-            <p class="lead">Load Error!</p>
-        </div>
-        <br>
-        <div class="row col-md-8">
-            <table class="table">
-                <thead class="thead-dark">
-                  <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">#</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Total Number of Open Issues</td>
-                    <td>{{ data.total }}</td>
-                  </tr>
-                  <tr>
-                    <td>Number of Open Issues that were Opened in the last 24 hours</td>
-                    <td>{{ data.last_24 }}</td>
-                  </tr>
-                  <tr>
-                    <td>Number of Open Issues that were Opened more than 24 hours ago but less than 7 days ago</td>
-                    <td>{{ data.last_week }}</td>
-                  </tr>
-                  <tr>
-                    <td>Number of Open Issues that were Opened more than 7 days ago</td>
-                    <td>{{ data.before_last_week }}</td>
-                  </tr>
-                </tbody>
-              </table>
-        </div>
-    </div>
 
-    <script src="./scripts/app.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>GitHub Issue Tracker</title>
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <div id="body-container" class="container" ng-app="github-issues-tracking" ng-controller="IssueController">
+      <div class="row">
+        <div id="main-content" class="col-md-10">
+          <div id="main-content-container" class="jumbotron jumbotron-fluid">
+            <h1 id="main-content-head" class="display-4">GitHub Issues Tracker</h1>
+            <p id="main-desc-1" class="text-muted">This application tracks the number of issues for any GitHub Public
+              Repository for various different timeframes.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3 col-md-12">
+        <form>
+          <div class="form-group col-md-12">
+            <label for="link" class="lead">Public Repository Link</label>
+            <input class="w-100 px-2 py-2" type="url" class="form-control" ng-model="link" id="link"
+              aria-describedby="linkHelp" placeholder="https://github.com/username/repository">
+            <small id="linkHelp" class="form-text text-muted">Please enter the link to a GitHub Public
+              Repository</small>
+          </div>
+          <button ng-click="updateLink(link)" class="ml-3 btn btn-primary my-2">Submit</button>
+        </form>
+      </div>
+      <div class="row col-md-10">
+        <div class="alert mt-3 alert-primary mt-2 w-100" ng-if="loading_data" role="alert">
+          <p class="lead">Loading Data!</p>
+        </div>
+        <div class="alert alert-success mt-2 w-100" ng-if="data_loaded" role="alert">
+          <p class="lead">Data Loaded!</p>
+        </div>
+        <div class="alert alert-danger mt-2 w-100" ng-if="load_error" role="alert">
+          <p class="lead">Load Error!</p>
+        </div>
+      </div>
+      <div class="row col-md-10 mt-3">
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">#</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Total Number of Open Issues</td>
+              <td class="text-muted">{{ data.total }}</td>
+            </tr>
+            <tr>
+              <td>Number of Open Issues that were Opened in the last 24 hours</td>
+              <td class="text-muted">{{ data.last_24 }}</td>
+            </tr>
+            <tr>
+              <td>Number of Open Issues that were Opened more than 24 hours ago but less than 7 days ago</td>
+              <td class="text-muted">{{ data.last_week }}</td>
+            </tr>
+            <tr>
+              <td>Number of Open Issues that were Opened more than 7 days ago</td>
+              <td class="text-muted">{{ data.before_last_week }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="./scripts/app.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous">
+  </script>
 </body>
+
 </html>
